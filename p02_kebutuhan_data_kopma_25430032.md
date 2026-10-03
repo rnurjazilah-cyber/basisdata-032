@@ -4,15 +4,27 @@
 
 Koperasi Mahasiswa Sejahtera (Kopma) adalah koperasi fiktif di lingkungan kampus yang menjual alat tulis, makanan ringan, dan minuman. Pembelinya dapat berupa anggota atau umum. Anggota mendaftar menggunakan NIM, nama, program studi, dan nomor HP; anggota aktif mendapat diskon 5%. Kasir mencatat penjualan, petugas gudang memeriksa stok dan memesan barang saat stok menipis, sedangkan ketua menerima laporan bulanan.
 
-## 2\. Aktor dan proses bisnis
+## \## 2. Aktor dan proses bisnis
 
-|Kode|Proses bisnis|Aktor|Pemicu|
-|-|-|-|-|
-|PB-01|Mendaftarkan anggota|Kasir|Mahasiswa ingin menjadi anggota|
-|PB-02|Mencatat penjualan|Kasir|Pembeli membayar di kasir|
-|PB-03|Memesan barang ke pemasok|Petugas gudang|Stok di bawah batas minimum|
-|PB-04|Menerima barang dari pemasok|Petugas gudang|Barang datang bersama faktur|
-|PB-05|Menyusun laporan bulanan|Ketua koperasi|Awal bulan|
+## 
+
+## | Kode | Proses bisnis | Aktor | Pemicu |
+
+## |---|---|---|---|
+
+## | PB-01 | Mendaftarkan anggota | Kasir | Mahasiswa ingin menjadi anggota |
+
+## | PB-02 | Mencatat penjualan | Kasir | Pembeli membayar di kasir |
+
+## | PB-03 | Memesan barang ke pemasok | Petugas gudang | Stok di bawah batas minimum |
+
+## | PB-04 | Menerima barang dari pemasok | Petugas gudang | Barang datang bersama faktur |
+
+## | PB-05 | Menyusun laporan bulanan | Ketua koperasi | Awal bulan |
+
+## | PB-06 | Mengelola data pemasok | Ketua koperasi | Ada pemasok baru atau data pemasok berubah |
+
+## | PB-07 | Memperbarui status anggota | Ketua koperasi | Status keanggotaan perlu diubah |
 
 ## 3\. Dokumen sumber yang dianalisis
 
@@ -52,15 +64,27 @@ Subtotal dan total pada nota merupakan nilai yang dapat dihitung dari jumlah, ha
 * KI-04: Sepuluh anggota dengan belanja terbesar per bulan. Data: penjualan, detail penjualan, dan anggota.
 * KI-05: Saldo poin setiap anggota. Data: anggota, penjualan, poin diperoleh, dan poin ditukar.
 
-## 7\. Matriks CRUD
+## \## 7. Matriks CRUD
 
-|Proses|Anggota|Barang|Penjualan|Detail penjualan|Pemasok|Pembelian|
-|-|-|-|-|-|-|-|
-|PB-01 Mendaftarkan anggota|C|-|-|-|-|-|
-|PB-02 Mencatat penjualan|R,U|R, U|C|C|-|-|
-|PB-03 Memesan barang ke pemasok|-|R|-|-|R|C|
-|PB-04 Menerima barang dari pemasok|-|U|-|-|R|U|
-|PB-05 Menyusun laporan bulanan|R|R|R|R|-|R|
+## 
+
+## | Proses | Anggota | Barang | Penjualan | Detail penjualan | Pemasok | Pembelian |
+
+## |---|---|---|---|---|---|---|
+
+## | PB-01 Mendaftarkan anggota | C | - | - | - | - | - |
+
+## | PB-02 Mencatat penjualan | R, U | R, U | C | C | - | - |
+
+## | PB-03 Memesan barang ke pemasok | - | R | - | - | R | C |
+
+## | PB-04 Menerima barang dari pemasok | - | U | - | - | R | U |
+
+## | PB-05 Menyusun laporan bulanan | R | R | R | R | - | R |
+
+## | PB-06 Mengelola data pemasok | - | - | - | - | C, R, U | - |
+
+## | PB-07 Memperbarui status anggota | R, U | - | - | - | - | - |
 
 ## 8\. Kamus data awal
 
