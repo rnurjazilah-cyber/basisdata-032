@@ -1,172 +1,152 @@
-# Laporan Praktikum Basis Data - Pertemuan 3
+# Laporan Perancangan ERD Fisik Sistem Informasi Kopma
 
-**Pembuatan Tabel Database di MariaDB dengan phpMyAdmin**
-
-**Nama:** Riska Nur Jazilah | **NPM:** 25430032 | **Kelas:** A
+**Nama:** Riska Nur Jazilah  
+**NPM:** 25430032  
+**Kelas:** A
 
 ---
 
-## 1. Tujuan Praktikum
+## 1. Pendahuluan
 
-1. Membuat database `kopma` di MariaDB melalui phpMyAdmin.
-2. Membuat 8 tabel sesuai ERD fisik pada Gambar 3.2, lengkap dengan tipe data dan constraint.
-3. Menerapkan Primary Key, Foreign Key, UNIQUE, NOT NULL, DEFAULT, dan CHECK.
-4. Memahami hubungan antartabel pada database relasional.
+Laporan ini mendokumentasikan ERD fisik basis data Kopma (Koperasi Mahasiswa), yaitu rancangan sembilan tabel yang mencatat penjualan, pembelian barang, keanggotaan, dan poin anggota.
 
-## 2. Dasar Teori
+**Tujuan.** Rancangan ini dibuat agar setiap kolom memiliki tipe data dan constraint yang jelas, sehingga bisa langsung dipakai sebagai acuan penulisan DDL pada Modul 5.
 
-Database relasional menyimpan data dalam tabel yang saling berhubungan. **Primary Key** adalah kolom yang membedakan setiap baris data, sedangkan **Foreign Key** adalah kolom yang merujuk Primary Key di tabel lain sehingga dua tabel terhubung. **Constraint** adalah aturan yang dijaga langsung oleh database, misalnya UNIQUE agar nilai tidak kembar, NOT NULL agar kolom wajib diisi, DEFAULT untuk nilai bawaan, dan CHECK untuk membatasi nilai yang boleh masuk.
+**Ruang lingkup.** ERD mencakup sembilan tabel: `petugas`, `anggota`, `pemasok`, `barang`, `penjualan`, `detail_penjualan`, `pembelian`, `detail_pembelian`, dan `transaksi_poin`. Tabel-tabel ini disusun untuk menjawab enam kebutuhan informasi (KI-01 sampai KI-06) yang dijelaskan pada bagian berikutnya.
 
-Relasi banyak-ke-banyak, misalnya satu nota berisi banyak barang dan satu barang muncul di banyak nota, tidak bisa disimpan langsung dalam tabel. Relasi ini dipecah menjadi tabel rincian (`detail_penjualan` dan `detail_pembelian`) yang juga menyimpan jumlah dan harga saat transaksi.
+## 2. Kebutuhan Informasi
 
-## 3. Alat dan Bahan
+Enam kebutuhan informasi (KI) menentukan tabel yang dibutuhkan, dan setiap KI dapat ditelusuri ke jalur tabel tertentu pada ERD.
 
-- Sistem operasi Windows
-- XAMPP (Apache dan MariaDB/MySQL)
-- phpMyAdmin
-- Bahasa SQL (DDL)
-- Gambar ERD fisik Kopma (Gambar 3.2)
+| Kode | Kebutuhan informasi | Jalur tabel |
+| --- | --- | --- |
+| KI-01 | Omzet dan jumlah nota per hari/bulan | penjualan → detail_penjualan |
+| KI-02 | Lima barang terlaris per bulan | barang → detail_penjualan → penjualan |
+| KI-03 | Barang di bawah stok minimum | barang |
+| KI-04 | Sepuluh anggota dengan belanja terbesar | anggota → penjualan → detail_penjualan |
+| KI-05 | Poin diperoleh dan ditukar per bulan | anggota → penjualan → transaksi_poin |
+| KI-06 | Sepuluh anggota dengan poin terbanyak | anggota → penjualan → transaksi_poin |
 
-## 4. Langkah Pengerjaan
+Tabel `transaksi_poin` dibutuhkan khusus untuk KI-05 dan KI-06, karena hanya tabel ini yang mencatat poin yang diperoleh dan ditukar.
 
-1. Membuka XAMPP Control Panel, lalu menyalakan **Apache** dan **MySQL** sampai keduanya berwarna hijau.
-2. Membuka browser dan mengakses `localhost/phpmyadmin`.
-3. Memilih database `kopma` di panel kiri, lalu membuka tab **SQL**.
-4. Menulis dan menjalankan perintah `CREATE TABLE` untuk 8 tabel dengan urutan:
-   - tabel induk: `petugas`, `anggota`, `pemasok`, `barang`;
-   - tabel transaksi: `penjualan` dan `pembelian`;
-   - tabel rincian: `detail_penjualan` dan `detail_pembelian`.
+## 3. Entitas dan Atribut
 
-   Urutan ini perlu karena Foreign Key hanya bisa merujuk tabel yang sudah ada.
-5. Memeriksa daftar tabel di panel kiri dan struktur kolom tiap tabel di menu **Structure**.
-6. Memeriksa hubungan antartabel di menu **Designer**.
+Setiap tabel berikut menjelaskan kolom, tipe data, dan constraint-nya sebagai acuan DDL. Kolom ENUM dan kolom kunci selalu NOT NULL.
 
-## 5. Hasil Praktikum
+Singkatan: PK (kunci primer), FK (kunci tamu), AUTO_INCREMENT (nomor otomatis), DEFAULT (nilai bawaan).
 
-Database `kopma` berhasil dibuat dengan 8 tabel dan seluruhnya masih kosong (0 baris).
+### 3.1 petugas
 
-### 5.1 Kolom dan Constraint Tiap Tabel
+Menyimpan petugas Kopma beserta perannya.
 
-**Tabel petugas**
+| Kolom | Tipe | Constraint | Keterangan |
+| --- | --- | --- | --- |
+| id_petugas | SMALLINT | PK, AUTO_INCREMENT | Nomor unik petugas |
+| kode_petugas | CHAR(3) | UNIQUE | Kode singkat petugas |
+| nama_petugas | VARCHAR(100) | NOT NULL | Nama petugas |
+| peran_petugas | ENUM | NOT NULL | kasir, gudang, atau ketua |
 
-| Kolom | Tipe | Keterangan |
-|---|---|---|
-| id_petugas | SMALLINT | Primary Key, AUTO_INCREMENT |
-| kode_petugas | CHAR(3) | UNIQUE, NOT NULL |
-| nama_petugas | VARCHAR(100) | NOT NULL |
-| peran_petugas | ENUM | kasir, gudang, atau ketua |
+### 3.2 anggota
 
-**Tabel anggota**
+Menyimpan data anggota Kopma.
 
-| Kolom | Tipe | Keterangan |
-|---|---|---|
-| id_anggota | INT | Primary Key, AUTO_INCREMENT |
-| no_anggota | CHAR(6) | UNIQUE, NOT NULL |
-| nim_anggota | CHAR(10) | UNIQUE, NOT NULL |
-| nama_anggota | VARCHAR(100) | NOT NULL |
-| prodi_anggota | VARCHAR(60) | NOT NULL |
-| no_hp_anggota | VARCHAR(15) | boleh NULL (data pribadi) |
-| status_anggota | ENUM | aktif atau nonaktif |
-| tgl_daftar_anggota | DATE | NOT NULL |
+| Kolom | Tipe | Constraint | Keterangan |
+| --- | --- | --- | --- |
+| id_anggota | INT | PK, AUTO_INCREMENT | Nomor unik anggota |
+| no_anggota | CHAR(6) | UNIQUE | Nomor keanggotaan |
+| nim_anggota | CHAR(10) | UNIQUE | NIM anggota |
+| nama_anggota | VARCHAR(100) | NOT NULL | Nama anggota |
+| prodi_anggota | VARCHAR(60) | NOT NULL | Program studi |
+| no_hp_anggota | VARCHAR(15) | NULL | Data pribadi, boleh kosong |
+| status_anggota | ENUM | NOT NULL | aktif atau nonaktif |
+| tgl_daftar_anggota | DATE | NOT NULL | Tanggal mendaftar |
 
-**Tabel pemasok**
+### 3.3 pemasok
 
-| Kolom | Tipe | Keterangan |
-|---|---|---|
-| id_pemasok | INT | Primary Key, AUTO_INCREMENT |
-| nama_pemasok | VARCHAR(100) | NOT NULL |
-| telepon_pemasok | VARCHAR(15) | boleh NULL |
-| alamat_pemasok | VARCHAR(200) | boleh NULL |
+Menyimpan pemasok barang.
 
-**Tabel barang**
+| Kolom | Tipe | Constraint | Keterangan |
+| --- | --- | --- | --- |
+| id_pemasok | INT | PK, AUTO_INCREMENT | Nomor unik pemasok |
+| nama_pemasok | VARCHAR(100) | NOT NULL | Nama pemasok |
+| telepon_pemasok | VARCHAR(15) | NULL | Telepon, boleh kosong |
+| alamat_pemasok | VARCHAR(200) | NULL | Alamat, boleh kosong |
 
-| Kolom | Tipe | Keterangan |
-|---|---|---|
-| id_barang | INT | Primary Key, AUTO_INCREMENT |
-| kode_barang | VARCHAR(10) | UNIQUE, NOT NULL |
-| nama_barang | VARCHAR(100) | NOT NULL |
-| kategori_barang | ENUM | ATK, makanan, atau minuman |
-| harga_jual_barang | DECIMAL(12,2) | CHECK tidak negatif |
-| stok_barang | INT | CHECK tidak negatif |
-| stok_min_barang | INT | DEFAULT 5 |
+### 3.4 barang
 
-**Tabel penjualan**
+Menyimpan barang yang dijual beserta stoknya.
 
-| Kolom | Tipe | Keterangan |
-|---|---|---|
-| id_penjualan | INT | Primary Key, AUTO_INCREMENT |
-| no_nota_penjualan | CHAR(12) | UNIQUE, NOT NULL |
-| tgl_penjualan | DATETIME | NOT NULL |
-| id_petugas | SMALLINT | Foreign Key ke petugas |
-| id_anggota | INT | Foreign Key ke anggota, boleh NULL |
-| bayar_penjualan | DECIMAL(12,2) | NOT NULL |
+| Kolom | Tipe | Constraint | Keterangan |
+| --- | --- | --- | --- |
+| id_barang | INT | PK, AUTO_INCREMENT | Nomor unik barang |
+| kode_barang | VARCHAR(10) | UNIQUE | Kode barang |
+| nama_barang | VARCHAR(100) | NOT NULL | Nama barang |
+| kategori_barang | ENUM | NOT NULL | ATK, makanan, atau minuman |
+| harga_jual_barang | DECIMAL(12,2) | CHECK ≥ 0 | Harga jual |
+| stok_barang | INT | CHECK ≥ 0 | Jumlah stok saat ini |
+| stok_min_barang | INT | DEFAULT 5 | Batas stok minimum (dipakai KI-03) |
 
-**Tabel detail_penjualan**
+### 3.5 penjualan
 
-| Kolom | Tipe | Keterangan |
-|---|---|---|
-| id_penjualan | INT | Primary Key (gabungan), Foreign Key ke penjualan |
-| id_barang | INT | Primary Key (gabungan), Foreign Key ke barang |
-| qty_detail_penjualan | SMALLINT | CHECK lebih dari 0 |
-| harga_satuan_detail_penjualan | DECIMAL(12,2) | NOT NULL |
+Menyimpan satu nota penjualan. Kolom `id_anggota` boleh kosong karena pembeli yang bukan anggota tetap bisa dilayani.
 
-**Tabel pembelian**
+| Kolom | Tipe | Constraint | Keterangan |
+| --- | --- | --- | --- |
+| id_penjualan | INT | PK, AUTO_INCREMENT | Nomor unik penjualan |
+| no_nota_penjualan | CHAR(12) | UNIQUE | Nomor nota |
+| tgl_penjualan | DATETIME | NOT NULL | Waktu transaksi |
+| id_petugas | SMALLINT | FK → petugas | Petugas yang melayani |
+| id_anggota | INT | FK → anggota, NULL | Anggota pembeli, boleh kosong |
+| bayar_penjualan | DECIMAL(12,2) | NOT NULL | Jumlah dibayar |
 
-| Kolom | Tipe | Keterangan |
-|---|---|---|
-| id_pembelian | INT | Primary Key, AUTO_INCREMENT |
-| no_faktur_pembelian | VARCHAR(20) | NOT NULL |
-| tgl_pembelian | DATE | NOT NULL |
-| id_pemasok | INT | Foreign Key ke pemasok |
-| status_pembelian | ENUM | dipesan atau diterima |
+### 3.6 detail_penjualan
 
-**Tabel detail_pembelian**
+Menyimpan barang-barang pada satu nota. Kunci primernya gabungan `id_penjualan` dan `id_barang`.
 
-| Kolom | Tipe | Keterangan |
-|---|---|---|
-| id_pembelian | INT | Primary Key (gabungan), Foreign Key ke pembelian |
-| id_barang | INT | Primary Key (gabungan), Foreign Key ke barang |
-| qty_detail_pembelian | INT | CHECK lebih dari 0 |
-| harga_beli_detail_pembelian | DECIMAL(12,2) | NOT NULL |
+| Kolom | Tipe | Constraint | Keterangan |
+| --- | --- | --- | --- |
+| id_penjualan | INT | PK, FK → penjualan | Nota yang memuat barang |
+| id_barang | INT | PK, FK → barang | Barang yang terjual |
+| qty_detail_penjualan | SMALLINT | CHECK > 0 | Jumlah barang terjual |
+| harga_satuan_detail_penjualan | DECIMAL(12,2) | NOT NULL | Harga per unit saat terjual |
 
-### 5.2 Relasi Antartabel
+### 3.7 pembelian
 
-| Tabel induk | Tabel anak | Hubungan |
-|---|---|---|
-| petugas | penjualan | satu petugas melayani nol atau banyak penjualan |
-| anggota | penjualan | satu anggota melakukan nol atau banyak penjualan; penjualan boleh tanpa anggota |
-| penjualan | detail_penjualan | satu penjualan berisi satu atau banyak detail |
-| barang | detail_penjualan | satu barang tercantum di nol atau banyak detail penjualan |
-| pemasok | pembelian | satu pemasok menerima nol atau banyak pembelian |
-| pembelian | detail_pembelian | satu pembelian berisi satu atau banyak detail |
-| barang | detail_pembelian | satu barang tercantum di nol atau banyak detail pembelian |
+Menyimpan pembelian barang dari pemasok beserta petugas yang menangani.
 
-Di menu Designer, garis penghubung antartabel muncul sesuai Foreign Key di atas.
+| Kolom | Tipe | Constraint | Keterangan |
+| --- | --- | --- | --- |
+| id_pembelian | INT | PK, AUTO_INCREMENT | Nomor unik pembelian |
+| no_faktur_pembelian | VARCHAR(20) | NOT NULL | Nomor faktur pemasok |
+| tgl_pembelian | DATE | NOT NULL | Tanggal pembelian |
+| id_pemasok | INT | FK → pemasok | Pemasok barang |
+| id_petugas | SMALLINT | FK → petugas | Petugas yang menangani |
+| status_pembelian | ENUM | NOT NULL | dipesan atau diterima |
 
-## 6. Pembahasan
+### 3.8 detail_pembelian
 
-Dari hasil praktikum, tabel dikelompokkan menjadi tiga jenis. Tabel master (`petugas`, `anggota`, `pemasok`, `barang`) menyimpan data pokok yang jarang berubah. Tabel transaksi (`penjualan`, `pembelian`) mencatat satu kejadian, yaitu satu nota atau satu faktur. Tabel rincian mencatat isi tiap nota atau faktur per barang, sehingga harga dan jumlah saat transaksi tetap tersimpan walaupun harga barang berubah di kemudian hari.
+Menyimpan barang-barang pada satu pembelian. Kunci primernya gabungan `id_pembelian` dan `id_barang`.
 
-Kolom `id_anggota` pada tabel `penjualan` dibuat boleh kosong karena pembeli tidak harus anggota koperasi. Kolom `no_hp_anggota` juga boleh kosong karena termasuk data pribadi. Constraint CHECK dipakai agar stok dan harga tidak bisa bernilai negatif, serta jumlah pada tabel rincian harus lebih dari 0, sehingga aturan tersebut dijaga langsung oleh database. Foreign Key memastikan nota tidak bisa dibuat untuk petugas yang tidak terdaftar.
+| Kolom | Tipe | Constraint | Keterangan |
+| --- | --- | --- | --- |
+| id_pembelian | INT | PK, FK → pembelian | Pembelian yang memuat barang |
+| id_barang | INT | PK, FK → barang | Barang yang dibeli |
+| qty_detail_pembelian | INT | CHECK > 0 | Jumlah barang dibeli |
+| harga_beli_detail_pembelian | DECIMAL(12,2) | NOT NULL | Harga beli per unit |
 
-## 7. Kesimpulan
+### 3.9 transaksi_poin
 
-Database `kopma` berhasil dibuat dengan 8 tabel sesuai ERD Gambar 3.2. Primary Key membedakan setiap data, Foreign Key menghubungkan tabel transaksi dengan tabel induknya, dan constraint seperti UNIQUE, CHECK, dan DEFAULT membuat aturan data dijaga langsung oleh database. Pembuatan tabel harus berurutan dari tabel induk ke tabel anak.
+Menyimpan catatan poin anggota yang diperoleh dari belanja atau ditukar. Poin terhubung ke anggota lewat nota penjualan.
 
-## 8. Lampiran
+| Kolom | Tipe | Constraint | Keterangan |
+| --- | --- | --- | --- |
+| id_transaksi_poin | INT | PK, AUTO_INCREMENT | Nomor unik catatan poin |
+| id_penjualan | INT | FK → penjualan | Nota asal poin |
+| jenis_transaksi_poin | ENUM | NOT NULL | diperoleh atau ditukar |
+| jumlah_transaksi_poin | INT | NOT NULL | Banyaknya poin |
 
-**Lampiran 1.** Daftar 8 tabel di database `kopma`
+## 4. Kesimpulan
 
-![Daftar tabel](img/daftar_tabel.png)
+ERD fisik Kopma terdiri dari sembilan tabel yang cukup untuk menjawab enam kebutuhan informasi, dari omzet dan barang terlaris sampai stok minimum dan poin anggota.
 
-**Lampiran 2.** Struktur tabel `petugas`
-
-![Struktur tabel petugas](img/struktur_petugas.png)
-
-**Lampiran 3.** Relasi antartabel di Designer
-
-![Relasi di Designer](img/designer.png)
-
-## 9. Penggunaan AI
-
-Saya memakai Claude (Anthropic) untuk membantu menyusun draf skrip SQL dan laporan ini. Skrip saya jalankan dan periksa sendiri, dan tangkapan layar berasal dari hasil saya.
+Setiap kolom sudah memiliki tipe data dan constraint, sehingga rancangan ini bisa langsung diterjemahkan menjadi perintah DDL pada Modul 5.
